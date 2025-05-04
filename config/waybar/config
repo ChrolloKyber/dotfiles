@@ -2,14 +2,14 @@
   "include": [
     "$HOME/.config/waybar/module",
   ],
-  "layer": "top",
+  "layer": "bottom",
   "position": "top",
   "height": "auto",
   "spacing": 4,
   "margin-top": 3,
   "margin-left": 10,
   "margin-right": 10,
-  "output": ["HDMI-A-1"],
+  "output": ["eDP-1","HDMI-A-1"],
   "fixed-center": true,
   "reload_style_on_change": true,
 

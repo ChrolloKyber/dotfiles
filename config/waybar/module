@@ -90,7 +90,7 @@
     },
 
     "custom/power": {
-      "format": "⏻",
+      "format": "",
       "on-click": "wlogout",
     },
 
@@ -159,7 +159,6 @@
         "title<.*WhatsApp — .*>": "",
         "title<Bluetooth Devices>": "",
         "title<.*[Dd]iscord.*>": "",
-        "class<firefox|zen> title<.*github.*>": "",
         "title<NixOS.*>": "",
         "class<vlc>": "󰕼",
         "class<mpv>": "",
@@ -184,6 +183,8 @@
         "class<brave-browser|chromium>": "",
         "class<swappy>": "",
         "class<evince>": "",
+        "class<com.stremio.stremio>": "󱜐",
+        "class<scrcpy>": "",
       },
     },
 
