@@ -1,0 +1,42 @@
+{
+  "include": [
+    "$HOME/.config/waybar/module",
+  ],
+  "layer": "bottom",
+  "position": "top",
+  "height": "auto",
+  "spacing": 4,
+  "margin-top": 3,
+  "margin-left": 10,
+  "margin-right": 10,
+  "output": ["eDP-1","HDMI-A-1"],
+  "fixed-center": true,
+  "reload_style_on_change": true,
+
+  "modules-left": [
+    "custom/apps",
+    "custom/separator#line",
+    "hyprland/window"
+  ],
+
+  "modules-center": [
+    "custom/swaync",
+    "custom/separator#line",
+    "hyprland/workspaces",
+    "custom/separator#line",
+    "clock",
+    "custom/separator#line",
+    "idle_inhibitor",
+  ],
+
+  "modules-right": [
+    "mpris",
+    "pulseaudio",
+    "custom/separator#line",
+    "backlight",
+    "custom/separator#line",
+    "tray",
+    "custom/separator#line",
+    "group/power"
+  ],
+}
