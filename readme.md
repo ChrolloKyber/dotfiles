@@ -1,5 +1,5 @@
 # ArchBTW
-Back to Arch after trying out NixOS (NixOS config [here](https://github.com/ChrolloKryber/dotfiles/tree/nixOS))
+Back to Arch after trying out NixOS
 
 Hyprland Setup
 ---
