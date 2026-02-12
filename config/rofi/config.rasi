@@ -1,4 +1,0 @@
-configuration {
-    modi: "window,calc:~/.config/rofi/qalc.sh,drun,clipboard:cliphist list,emoji,";
-}
-@theme "/usr/share/rofi/themes/fancy.rasi"
