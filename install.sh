@@ -13,3 +13,5 @@ ansible-playbook playbooks/ohmyzsh.yaml
 ansible-playbook playbooks/setup.yaml
 
 ansible-playbook playbooks/user.yaml
+
+sudo pacman -Rns ansible
