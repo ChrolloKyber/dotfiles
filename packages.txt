@@ -38,3 +38,4 @@ mpv
 ttf-nerd-fonts-symbols
 noto-fonts-cjk
 niri
+bat
