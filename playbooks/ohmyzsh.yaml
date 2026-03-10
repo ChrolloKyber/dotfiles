@@ -1,0 +1,38 @@
+---
+- name: Install Oh My Zsh
+  hosts: localhost
+  connection: local
+  become: false
+  vars:
+    oh_my_zsh_dir: "{{ lookup('env', 'HOME') }}/.oh-my-zsh"
+    cache_dir: "{{ lookup('env', 'HOME') }}/.cache/ohmyzsh-installer"
+  tasks:
+    - name: Check if Oh My Zsh is installed
+      stat:
+        path: "{{ oh_my_zsh_dir }}"
+      register: oh_my_zsh_stat
+
+    - name: Create cache directory
+      file:
+        path: "{{ cache_dir }}"
+        state: directory
+        mode: "0755"
+      when: not oh_my_zsh_stat.stat.exists
+
+    - name: Download Oh My Zsh installer
+      get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: "{{ cache_dir }}/install.sh"
+        mode: '0755'
+      when: not oh_my_zsh_stat.stat.exists
+
+    - name: Run Oh My Zsh installer
+      command: "{{ cache_dir }}/install.sh --unattended"
+      when: not oh_my_zsh_stat.stat.exists
+      register: ohmyzsh_result
+      failed_when: ohmyzsh_result.rc != 0 and ohmyzsh_result.rc != 1
+
+    - name: Remove cache directory
+      file:
+        path: "{{ cache_dir }}"
+        state: absent

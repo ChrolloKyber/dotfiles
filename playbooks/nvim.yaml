@@ -1,0 +1,16 @@
+---
+- name: Clone nvim config
+  hosts: localhost
+  connection: local
+  become: false
+  tasks:
+    - name: Remove local nvim config
+      file:
+        path: "{{ ansible_facts.env.HOME }}/.config/nvim"
+        state: absent
+
+    - name: Clone
+      ansible.builtin.git:
+        repo: https://github.com/chrollokyber/nvim
+        dest: "{{ ansible_facts.env.HOME }}/.config/nvim"
+        update: true

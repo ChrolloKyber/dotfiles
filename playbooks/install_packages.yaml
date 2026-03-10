@@ -1,0 +1,14 @@
+---
+- name: Install packages
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    packages: "{{ lookup('file', '../packages.txt').splitlines() }}"
+
+  tasks:
+    - name: Install packages from packages.txt
+      pacman:
+        name: "{{ packages }}"
+        state: present
+      become: true

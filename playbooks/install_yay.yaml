@@ -1,0 +1,33 @@
+---
+- name: Install yay
+  hosts: localhost
+  connection: local
+  become: false
+  vars:
+    home: "{{ lookup('env', 'HOME') }}"
+    yay_dir: "{{ home }}/.cache/yay-build/"
+  tasks:
+    - name: Install git
+      become: true
+      pacman:
+        name: git
+        state: present
+        update_cache: true
+
+    - name: Create build directory
+      file:
+        path: "{{ yay_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Clone repo
+      ansible.builtin.git:
+        repo: https://aur.archlinux.org/yay.git
+        dest: "{{ yay_dir }}"
+        update: false
+
+    - name: Make and install package
+      become: false
+      ansible.builtin.command: makepkg -si --noconfirm
+      args:
+        chdir: "{{ yay_dir }}"

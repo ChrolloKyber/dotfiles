@@ -1,0 +1,27 @@
+---
+- name: Setup local system
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    home: "{{ lookup('env', 'HOME') }}"
+    conf_dir: "{{ lookup('env', 'HOME') }}/.config/"
+
+  tasks:
+    - name: Ensure ~/.config exists
+      file:
+        path: "{{ conf_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy config files
+      synchronize:
+        src: ../config/
+        dest: "{{ conf_dir }}"
+        mode: push
+
+    - name: Copy home files
+      synchronize:
+        src: ../home/
+        dest: "{{ home }}"
+        mode: push
