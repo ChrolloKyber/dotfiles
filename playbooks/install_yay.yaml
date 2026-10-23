@@ -22,7 +22,7 @@
 
     - name: Clone repo
       ansible.builtin.git:
-        repo: https://aur.archlinux.org/yay.git
+        repo: https://aur.archlinux.org/yay-bin.git
         dest: "{{ yay_dir }}"
         update: false
 
