@@ -8,6 +8,12 @@
 // https://yalter.github.io/niri/Configuration:-Input
 prefer-no-csd
 
+// Noctalia (v5): allows notification actions and window activation
+// (e.g. click-to-focus from the taskbar/window-switcher) to work.
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
 environment {
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "qt6ct"
@@ -27,6 +33,9 @@ input {
             // For example:
             // layout "us,ru"
             // options "grp:win_space_toggle,compose:ralt,ctrl:nocaps"
+            options "grp:win_space_toggle,ctrl:nocaps"
+            layout "us,us"
+            variant ",colemak"
 
             // If this section is empty, niri will fetch xkb settings
             // from org.freedesktop.locale1. You can control these using
@@ -125,6 +134,7 @@ output "eDP-1" {
 
 output "HDMI-A-1" {
     mode "1920x1080@165.003"
+    // mode "1920x1080@60"
     variable-refresh-rate
     focus-at-startup
 }
@@ -314,8 +324,7 @@ layout {
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "kdeconnectd"
-spawn-at-startup "kdeconnect-indicator"
-spawn-sh-at-startup "qs -c noctalia-shell"
+spawn-at-startup "noctalia"
 spawn-sh-at-startup "sudo caddy run -c /etc/caddy/Caddyfile"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
@@ -347,7 +356,7 @@ screenshot-path "~/Pictures/Screenshots/Screenshot_%Y%m%d-%H%M%S.png"
 // https://yalter.github.io/niri/Configuration:-Animations
 animations {
     // Uncomment to turn off all animations.
-    // off
+    off
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
     // slowdown 3.0
@@ -372,16 +381,16 @@ window-rule {
     // This app-id regular expression will work for both:
     // - host Firefox (app-id is "firefox")
     // - Flatpak Firefox (app-id is "org.mozilla.firefox")
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id="firefox$" title="^Picture-in-Picture$"
     open-floating true
-    open-on-workspace "media"
+    // open-on-workspace "media"
 }
 
 workspace "zen" {
-    open-on-output "HDMI-A-1"
+    // open-on-output "HDMI-A-1"
 }
 workspace "steam" {
-    open-on-output "HDMI-A-1"
+    // open-on-output "HDMI-A-1"
 }
 
 workspace "media" {
@@ -389,25 +398,45 @@ workspace "media" {
 }
 
 window-rule {
-    match app-id="firefox"
-    open-on-workspace "zen"
+    match app-id="com.stremio.Stremio"
+    open-maximized true
+    // default-column-width { proportion 1.0; }
+    block-out-from "screencast"
 }
 
-window-rule {
-    match app-id="zen"
-    open-on-workspace "zen"
-}
+// window-rule {
+//     match app-id="firefox"
+//     open-on-workspace "zen"
+// }
+
+// window-rule {
+//     match app-id="zen"
+//     open-on-workspace "zen"
+// }
 
 window-rule {
     match app-id="steam"
     open-on-workspace "steam"
-    open-maximized false
+    open-maximized true
 }
 
 window-rule {
     match app-id="mpv"
     open-on-workspace "media"
     open-fullscreen true
+}
+
+// Noctalia (v5): float and size its Settings window nicely instead of tiling it.
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+window-rule {
+    match app-id="vesktop"
+    block-out-from "screencast"
 }
 
 window-rule {
@@ -420,15 +449,32 @@ window-rule {
     block-out-from "screencast"
 }
 
+// Noctalia (v5) renamed this layer-shell surface to "noctalia-notification"
+// (singular, no wildcard) - the old "noctalia-notifications-*" pattern no
+// longer matches anything, so notification toasts were not actually being
+// blocked from screencasts.
 layer-rule {
-    match namespace="noctalia-notifications-*"
+    match namespace="^noctalia-notification$"
     block-out-from "screencast"
+}
+
+// Places Noctalia's blurred backdrop copy inside niri's Overview backdrop.
+// This matches this system's noctalia settings, which has [backdrop] enabled
+// (see docs.noctalia.dev/noctalia/compositor-settings/niri "Option 1").
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
 }
 
 window-rule {
     match app-id="kitty"
-    opacity 0.95
+    opacity 0.85
+
+    background-effect {
+        blur true
+    }
 }
+
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {
@@ -465,13 +511,13 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    Alt+Space hotkey-overlay-title="Run an Application" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
-    Mod+Shift+Comma hotkey-overlay-title="Launch emoji picker" { spawn-sh "qs -c noctalia-shell ipc call launcher emoji";}
-    Mod+Shift+Period hotkey-overlay-title="Launch clipboard" { spawn-sh "qs -c noctalia-shell ipc call launcher clipboard";}
-    Alt+F4 hotkey-overlay-title="Session Menu" allow-inhibiting=false { spawn-sh "qs -c noctalia-shell ipc call sessionMenu toggle";}
+    Mod+F12 hotkey-overlay-title="Open a Floating Terminal: kitty" { spawn-sh "kitten quick-access-terminal"; }
+    Alt+Space hotkey-overlay-title="Run an Application" { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn-sh "noctalia msg session lock"; }
+    Mod+Shift+Comma hotkey-overlay-title="Launch emoji picker" { spawn-sh "noctalia msg panel-toggle launcher /emo"; }
+    Mod+Shift+Period hotkey-overlay-title="Launch clipboard" { spawn-sh "noctalia msg panel-toggle clipboard"; }
+    Alt+F4 hotkey-overlay-title="Session Menu" allow-inhibiting=false { spawn-sh "noctalia msg panel-toggle session"; }
     Mod+E hotkey-overlay-title="Launch File Manager" {spawn-sh "nemo";}
-
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
     // For example, this is a standard bind to toggle the screen reader (orca).
@@ -663,6 +709,7 @@ binds {
     Mod+Ctrl+R { reset-window-height; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
+    Mod+Ctrl+Shift+F hotkey-overlay-title="Toggles windowed fullscreen" { toggle-windowed-fullscreen; }
 
     // Expand the focused column to space not taken up by other fully visible columns.
     // Makes the column "fill the rest of the space".
@@ -709,8 +756,10 @@ binds {
     Ctrl+Print allow-inhibiting=false { screenshot-screen show-pointer=false write-to-disk=false; }
     Mod+Print allow-inhibiting=false { screenshot-window write-to-disk=false; }
 
-    Mod+M {spawn-sh "niri msg output eDP-1 off";}
-    Mod+Shift+M {spawn-sh "niri msg output eDP-1 on";}
+    // Noctalia (v5) is a single "noctalia" binary now (no more "qs -c noctalia-shell").
+    // Worth testing whether this restart is even still needed with v5's native shell.
+    Mod+M {spawn-sh "niri msg output eDP-1 off && killall noctalia && noctalia -d";}
+    Mod+Shift+M {spawn-sh "niri msg output eDP-1 on && killall noctalia && noctalia -d";}
 
     // Applications such as remote-desktop clients and software KVM switches may
     // request that niri stops processing the keyboard shortcuts defined here
@@ -730,4 +779,5 @@ binds {
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
 }
-include "./noctalia.kdl"
+
+include "noctalia.kdl"
