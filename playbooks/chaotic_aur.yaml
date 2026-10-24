@@ -1,14 +1,23 @@
 ---
 - name: Install Chaotic-AUR keyring and mirrorlist
-  hosts: arch
+  hosts: localhost
   become: true
   tasks:
     - name: Add keys
-      community.general.pacman_key:
-        id: "3056513887B78AEB"
-        keyserver: keyserver.ubuntu.com
-        state: present
-        ensure_trusted: true
+      ansible.builtin.command:
+        argv:
+          - pacman-key
+          - --recv-key
+          - "3056513887B78AEB"
+          - --keyserver
+          - keyserver.ubuntu.com
+
+    - name: locally sign keys
+      ansible.builtin.command:
+        argv:
+          - pacman-key
+          - --lsign-key
+          - "3056513887B78AEB"
 
     - name: Check whether chaotic-keyring is installed
       ansible.builtin.command:
@@ -22,6 +31,7 @@
         argv:
           - pacman
           - -U
+          - --noconfirm
           - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
       when: chaotic_keyring.rc != 0
       changed_when: true
@@ -38,6 +48,7 @@
         argv:
           - pacman
           - -U
+          - --noconfirm
           - https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst
       when: chaotic_mirrorlist.rc != 0
       changed_when: true

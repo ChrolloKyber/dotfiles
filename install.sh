@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 
-sudo pacman -Syu git go ansible curl rsync
+# sudo pacman -Syu git go ansible curl rsync
 
-ansible-galaxy collection install community.general
+# ansible-galaxy collection install community.general
 
-ansible-playbook playbooks/install_yay.yaml
+# ansible-playbook playbooks/install_yay.yaml
 
 ansible-playbook playbooks/chaotic_aur.yaml
 
