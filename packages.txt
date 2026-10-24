@@ -6,6 +6,7 @@ btop
 calibre
 cliphist
 curl
+dms-shell
 docker
 docker-compose
 fzf
